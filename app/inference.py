@@ -12,27 +12,27 @@ class ModelInference:
         self.tokenizer = None
         self.model = None
 
-    def load_model(self):
+def load_model(self):
         """Загрузка модели и токенизатора один раз при старте"""
-        print(f"Начинаю загрузку модели: {self.model_path}") 
+        # Принудительно выводим текст в логи Railway
+        print(f"Начинаю загрузку модели: {self.model_path}", flush=True) 
         
-        # Загружаем токенизатор
-        self.tokenizer = AutoTokenizer.from_pretrained(
-            self.model_path, 
-            trust_remote_code=True
-        )
-        
-        # Загружаем саму модель
-        self.model = AutoModelForCausalLM.from_pretrained(
-            self.model_path,
-            torch_dtype=torch.float32, # Оптимально для процессоров Railway
-            device_map="cpu",          # Указываем явно, так как на бесплатном тарифе нет GPU
-            trust_remote_code=True
-        )
-        
-        print("Модель успешно загружена!")
+        try:
+            self.tokenizer = AutoTokenizer.from_pretrained(
+                self.model_path, 
+                trust_remote_code=True
+            )
+            self.model = AutoModelForCausalLM.from_pretrained(
+                self.model_path,
+                torch_dtype=torch.float32, 
+                device_map="cpu",
+                trust_remote_code=True
+            )
+            print(f"Модель {self.model_path} успешно загружена!", flush=True)
+        except Exception as e:
+            print(f"Ошибка при загрузке модели: {e}", flush=True)
 
-    def generate(self, prompt: str) -> str:
+def generate(self, prompt: str) -> str:
         """Логика генерации текста"""
         inputs = self.tokenizer(prompt, return_tensors="pt").to(self.model.device)
         
