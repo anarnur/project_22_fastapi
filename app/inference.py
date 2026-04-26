@@ -14,13 +14,22 @@ class ModelInference:
 
     def load_model(self):
         """Загрузка модели и токенизатора один раз при старте"""
-        print(f"Загрузка модели из: {self.model_path}...")
-        self.tokenizer = AutoTokenizer.from_pretrained(self.model_path)
+        print(f"Начинаю загрузку модели: {self.model_path}") 
+        
+        # Загружаем токенизатор
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            self.model_path, 
+            trust_remote_code=True
+        )
+        
+        # Загружаем саму модель
         self.model = AutoModelForCausalLM.from_pretrained(
             self.model_path,
-            torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
-            device_map="auto"
+            torch_dtype=torch.float32, # Оптимально для процессоров Railway
+            device_map="cpu",          # Указываем явно, так как на бесплатном тарифе нет GPU
+            trust_remote_code=True
         )
+        
         print("Модель успешно загружена!")
 
     def generate(self, prompt: str) -> str:
