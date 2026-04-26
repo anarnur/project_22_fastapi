@@ -8,7 +8,7 @@ load_dotenv() # Загружаем переменные из .env
 class ModelInference:
     def __init__(self):
         # Берем путь из .env или используем заглушку gpt2 для теста
-        self.model_path = os.getenv("MODEL_PATH", "gpt2") 
+        self.model_path = "TinyLlama/TinyLlama-1.1B-Chat-v1.0" 
         self.tokenizer = None
         self.model = None
 
